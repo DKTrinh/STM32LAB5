@@ -1,0 +1,4 @@
+fsm.c:20:12:matchRST	16	static
+fsm.c:24:12:matchOK	16	static
+fsm.c:28:6:command_parser_fsm	72	static
+fsm.c:69:6:uart_communication_fsm	72	static
