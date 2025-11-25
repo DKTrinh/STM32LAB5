@@ -37,13 +37,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  00018715  00000000  00000000  00034498  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0000f8ab  00000000  00000000  0004cbad  2**0
+ 17 .debug_line   0000f8a9  00000000  00000000  0004cbad  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0008dc23  00000000  00000000  0005c458  2**0
+ 18 .debug_str    0008dc23  00000000  00000000  0005c456  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  000ea07b  2**0
+ 19 .comment      00000053  00000000  00000000  000ea079  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00003c74  00000000  00000000  000ea0d0  2**2
+ 20 .debug_frame  00003c74  00000000  00000000  000ea0cc  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -511,21 +511,21 @@ int main(void)
   HAL_ADC_Start(&hadc1);
  80003f4:	4819      	ldr	r0, [pc, #100]	; (800045c <main+0x88>)
  80003f6:	f000 fd59 	bl	8000eac <HAL_ADC_Start>
-    HAL_TIM_Base_Start_IT(&htim2);
+  HAL_TIM_Base_Start_IT(&htim2);
  80003fa:	4819      	ldr	r0, [pc, #100]	; (8000460 <main+0x8c>)
  80003fc:	f002 f824 	bl	8002448 <HAL_TIM_Base_Start_IT>
-    HAL_UART_Receive_IT(&huart2, &buffer_byte, 1);
+  HAL_UART_Receive_IT(&huart2, &buffer_byte, 1);
  8000400:	2201      	movs	r2, #1
  8000402:	4918      	ldr	r1, [pc, #96]	; (8000464 <main+0x90>)
  8000404:	4818      	ldr	r0, [pc, #96]	; (8000468 <main+0x94>)
  8000406:	f002 fc86 	bl	8002d16 <HAL_UART_Receive_IT>
-    setTimer2(500);
+  setTimer2(500);
  800040a:	f44f 70fa 	mov.w	r0, #500	; 0x1f4
  800040e:	f000 f9e3 	bl	80007d8 <setTimer2>
-    setTimer3(1000);
+  setTimer3(1000);
  8000412:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
  8000416:	f000 f9fb 	bl	8000810 <setTimer3>
-    HAL_GPIO_WritePin(LED_YELLOW_GPIO_Port, LED_YELLOW_Pin, 1);
+  HAL_GPIO_WritePin(LED_YELLOW_GPIO_Port, LED_YELLOW_Pin, 1);
  800041a:	2201      	movs	r2, #1
  800041c:	2120      	movs	r1, #32
  800041e:	4813      	ldr	r0, [pc, #76]	; (800046c <main+0x98>)
@@ -540,29 +540,29 @@ int main(void)
  8000426:	781b      	ldrb	r3, [r3, #0]
  8000428:	2b01      	cmp	r3, #1
  800042a:	d106      	bne.n	800043a <main+0x66>
-	  	 		 command_parser_fsm(&hadc1, &huart2);
+		  command_parser_fsm(&hadc1, &huart2);
  800042c:	490e      	ldr	r1, [pc, #56]	; (8000468 <main+0x94>)
  800042e:	480b      	ldr	r0, [pc, #44]	; (800045c <main+0x88>)
  8000430:	f7ff febc 	bl	80001ac <command_parser_fsm>
-	  	 		 buffer_flag = 0;
+		  buffer_flag = 0;
  8000434:	4b0e      	ldr	r3, [pc, #56]	; (8000470 <main+0x9c>)
  8000436:	2200      	movs	r2, #0
  8000438:	701a      	strb	r2, [r3, #0]
-	  	 	 }
-	  	 	 uart_communication_fsm(&hadc1, &huart2);
+	  }
+	  uart_communication_fsm(&hadc1, &huart2);
  800043a:	490b      	ldr	r1, [pc, #44]	; (8000468 <main+0x94>)
  800043c:	4807      	ldr	r0, [pc, #28]	; (800045c <main+0x88>)
  800043e:	f7ff ff41 	bl	80002c4 <uart_communication_fsm>
-	  	 	 if(timer3_flag == 1){
+	  if(timer3_flag == 1){
  8000442:	4b0c      	ldr	r3, [pc, #48]	; (8000474 <main+0xa0>)
  8000444:	681b      	ldr	r3, [r3, #0]
  8000446:	2b01      	cmp	r3, #1
  8000448:	d1ec      	bne.n	8000424 <main+0x50>
-	  	 	        HAL_GPIO_TogglePin(LED_YELLOW_GPIO_Port, LED_YELLOW_Pin);
+	  HAL_GPIO_TogglePin(LED_YELLOW_GPIO_Port, LED_YELLOW_Pin);
  800044a:	2120      	movs	r1, #32
  800044c:	4807      	ldr	r0, [pc, #28]	; (800046c <main+0x98>)
  800044e:	f001 facd 	bl	80019ec <HAL_GPIO_TogglePin>
-	  	 	        setTimer3(1000);  // Reset timer cho lần toggle tiếp theo
+	  setTimer3(1000);
  8000452:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
  8000456:	f000 f9db 	bl	8000810 <setTimer3>
 	  if(buffer_flag == 1){
