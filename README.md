@@ -31,3 +31,7 @@ The UART Communication FSM, depicted on the right side of the figure, manages th
 
 * **OK State**: This state signifies the successful completion of the communication session.
     * The system performs necessary cleanup operations (such as clearing cached values) and transitions back to the **INIT** state to prepare for new requests.
+
+## Video Demonstration
+For a visual demonstration of the system in operation, please refer to the video linked below:
+[**Watch Project Video (Google Drive)**](https://drive.google.com/drive/folders/1h-v0FBVv0vXKfkmSQ4lQilD3oaQ8ZDU_?usp=sharing)
