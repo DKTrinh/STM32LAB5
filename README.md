@@ -19,7 +19,7 @@ The Command Parser FSM, depicted on the left side of the figure, manages the rec
 ---
 
 ## 2. UART Communication FSM
-<img width="885" height="523" alt="image" src="https://github.com/user-attachments/assets/cbe0f8a7-80c3-4809-84b8-8a9bab294dd8" />
+<img width="506" height="261" alt="image" src="https://github.com/user-attachments/assets/33b4ec09-c71c-477d-83eb-f596cfda803e" />
 
 The UART Communication FSM, depicted on the right side of the figure, manages the response logic and timeout mechanisms of the protocol. Its operation is defined as follows:
 
