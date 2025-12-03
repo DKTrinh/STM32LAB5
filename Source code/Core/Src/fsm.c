@@ -1,93 +1,95 @@
 /*
  * fsm.c
  *
- *  Created on: Nov 23, 2025
+ *  Created on: Nov 21, 2025
  *      Author: ADMIN
  */
 #include "fsm.h"
+//ADC_HandleTypeDef hadc1;
+//UART_HandleTypeDef huart2;
 
 uint8_t buffer_byte = 0;
 uint8_t buffer[MAX_BUFFER_SIZE];
 uint8_t index_buffer = 0;
 uint8_t buffer_flag = 0;
 
-static int parser_state = init;
-static uint8_t protocol_state = init;
-static uint8_t cmd_store[MAX_CMD_SIZE];
-static uint8_t cmd_idx = 0;
-static int adc_cache = 0;
+int status = INIT;
+uint8_t cmd_flag = INIT;
+uint8_t cmd_data[MAX_CMD_SIZE];
+uint8_t cmd_data_index = 0;
+int ADC_value = 0;
 
-static int matchRST(uint8_t *p) {
-    return (p[0] == 'R' && p[1] == 'S' && p[2] == 'T');
+
+int isCmdEqualToRST(uint8_t str[]){
+	if (str[0] == 'R' && str[1] == 'S' && str[2] == 'T') {
+		return 1;
+	}
+
+	return 0;
 }
 
-static int matchOK(uint8_t *p) {
-    return (p[0] == 'O' && p[1] == 'K');
+int isCmdEqualToOK(uint8_t str[]){
+	if (str[0] == 'O' && str[1] == 'K')
+		return 1;
+	return 0;
 }
 
-void command_parser_fsm(ADC_HandleTypeDef* hadc, UART_HandleTypeDef* huart) {
-    char outbuff[50];
-
-    switch (parser_state) {
-        case init:
-            if (buffer_byte == '!') parser_state = read;
-            break;
-
-        case read:
-            if (buffer_byte != '!' && buffer_byte != '#') {
-                cmd_store[cmd_idx++] = buffer_byte;
-                if (cmd_idx > 3) {
-                    cmd_idx = 0;
-                    parser_state = stop;
-                }
-            }
-            if (buffer_byte == '#') {
-                parser_state = stop;
-                cmd_idx = 0;
-            }
-            break;
-
-        case stop:
-            if (matchRST(cmd_store)) {
-                protocol_state = RST;
-                adc_cache = HAL_ADC_GetValue(hadc);
-                HAL_UART_Transmit(huart, (uint8_t*)outbuff, sprintf(outbuff, "!ADC=%d#\r\n", adc_cache), 300);
-                setTimer1(3000);
-            }
-            else if (matchOK(cmd_store)) {
-                protocol_state = OK;
-            }
-            parser_state = init;
-            break;
-
-        default:
-            parser_state = init;
-            break;
-    }
+void command_parser_fsm(ADC_HandleTypeDef* hadc1, UART_HandleTypeDef* huart2) {
+	char str[50];
+	switch(status) {
+		case INIT:
+			if(buffer_byte == '!') {
+				status = READING;
+				cmd_data_index = 0;
+			}
+			break;
+		case READING:
+			if (buffer_byte == '!') {
+				cmd_data_index = 0;
+			}
+			else if (buffer_byte == '#') {
+				if (isCmdEqualToRST(cmd_data) == 1){
+					cmd_flag = RST;
+					ADC_value = HAL_ADC_GetValue(hadc1);
+					HAL_UART_Transmit(huart2, (void *)str, sprintf(str, "!ADC=%d#\r\n", ADC_value), 1000);
+					setTimer1(3000);
+				}
+				else if (isCmdEqualToOK(cmd_data) == 1){
+					cmd_flag = OK;
+				}
+				status = INIT;
+				cmd_data_index = 0;
+			}
+			else {
+				cmd_data[cmd_data_index] = buffer_byte;
+				cmd_data_index++;
+				if(cmd_data_index >= MAX_CMD_SIZE) {
+					cmd_data_index = 0;
+				}
+			}
+			break;
+		default:
+			break;
+	}
 }
 
-void uart_communication_fsm(ADC_HandleTypeDef* hadc, UART_HandleTypeDef* huart) {
-    char txbuff[50];
-
-    switch (protocol_state) {
-        case init:
-            break;
-
-        case RST:
-            if (timer1_flag) {
-                adc_cache = HAL_ADC_GetValue(hadc);
-                HAL_UART_Transmit(huart, (uint8_t*)txbuff, sprintf(txbuff, "!ADC=%d#\r\n", adc_cache), 300);
-                setTimer1(1000);
-            }
-            break;
-
-        case OK:
-            adc_cache = -1;
-            protocol_state = init;
-            break;
-
-        default:
-            protocol_state = init;
-            break;
-    }
+void uart_communication_fsm(ADC_HandleTypeDef* hadc1, UART_HandleTypeDef* huart2) {
+	char str[50];
+	switch(cmd_flag){
+		case INIT:
+			break;
+		case RST:
+			if(timer1_flag == 1){
+				HAL_UART_Transmit(huart2, (void *)str, sprintf(str, "!ADC=%d#\r\n", ADC_value), 1000);
+				setTimer1(3000);
+			}
+			break;
+		case OK:
+			ADC_value = 0;
+			timer1_flag = 0;
+			cmd_flag = INIT;
+			break;
+		default:
+			break;
+	}
 }
